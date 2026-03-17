@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+
+  build-binaries:
+    name: Build Binaries
+    needs: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Bundle with esbuild
+        run: npm run bundle
+
+      - name: Build standalone binaries
+        run: |
+          npx @yao-pkg/pkg bundle/cli.cjs \
+            --compress GZip \
+            -t node20-macos-arm64,node20-macos-x64,node20-linux-x64,node20-win-x64 \
+            --out-path release/
+
+      - name: Rename binaries
+        run: |
+          cd release
+          mv cli-macos-arm64 smartlead-macos-arm64
+          mv cli-macos-x64 smartlead-macos-x64
+          mv cli-linux-x64 smartlead-linux-x64
+          mv cli-win-x64.exe smartlead-win-x64.exe
+
+      - name: Generate checksums
+        run: |
+          cd release
+          sha256sum smartlead-* > checksums.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: release/
+
+  publish-npm:
+    name: Publish to npm
+    needs: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Publish with provenance
+        run: npm publish --access public --provenance
+
+  github-release:
+    name: GitHub Release
+    needs: build-binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaries
+          path: release/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release/smartlead-macos-arm64
+            release/smartlead-macos-x64
+            release/smartlead-linux-x64
+            release/smartlead-win-x64.exe
+            release/checksums.txt

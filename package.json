@@ -1,0 +1,44 @@
+{
+  "name": "@smartlead/cli",
+  "version": "0.1.0",
+  "description": "CLI for the SmartLead email outreach platform",
+  "type": "module",
+  "bin": {
+    "smartlead": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=bundle/cli.cjs --external:fsevents",
+    "pkg": "npm run bundle && pkg bundle/cli.cjs --compress GZip",
+    "pkg:all": "npm run bundle && pkg bundle/cli.cjs --compress GZip -t node20-macos-arm64,node20-macos-x64,node20-linux-x64,node20-win-x64 --out-path release/"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Smartlead-Public/smartlead-cli.git"
+  },
+  "dependencies": {
+    "cli-table3": "^0.6.5",
+    "commander": "^12.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@yao-pkg/pkg": "^6.3.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.5.0"
+  },
+  "license": "MIT"
+}
