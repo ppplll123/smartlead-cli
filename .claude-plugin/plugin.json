@@ -1,0 +1,10 @@
+{
+  "name": "smartlead",
+  "version": "0.1.0",
+  "description": "Smartlead email outreach — campaigns, prospects, inbox, analytics. Wraps Smartlead CLI + API.",
+  "author": {
+    "name": "Peter Lewinski",
+    "email": "peter.lewinski.work@gmail.com"
+  },
+  "keywords": ["smartlead", "email", "outreach", "campaigns", "prospects", "leads"]
+}
