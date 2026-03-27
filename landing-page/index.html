@@ -639,6 +639,53 @@ footer a {
   text-decoration: none;
 }
 
+/* --- VIDEO SECTION --- */
+.video-section {
+  padding: 4rem 3rem;
+  text-align: center;
+  background: var(--navy-light);
+  border-top: 1px solid rgba(201, 168, 76, 0.08);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+  display: none;
+}
+
+.video-section.visible-section { display: block; }
+
+.video-section video {
+  max-width: 720px;
+  width: 100%;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-radius: 4px;
+  margin-top: 2rem;
+}
+
+.video-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.video-tab {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  background: var(--navy);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.video-tab:hover, .video-tab.active {
+  color: var(--navy);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
 /* --- ANIMATIONS --- */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(30px); }
@@ -723,6 +770,19 @@ footer a {
     <div class="stat-number">$0</div>
     <div class="stat-label">Upfront Cost</div>
   </div>
+</section>
+
+<!-- VIDEO DEMO (shown when ?video= param present) -->
+<section class="video-section" id="videoSection">
+  <div class="section-label">See It In Action</div>
+  <h2 class="section-title" style="margin:0 auto;text-align:center;">How we reactivate your dormant leads</h2>
+  <div class="video-tabs">
+    <button class="video-tab active" onclick="switchVideo('sora')">Demo Video</button>
+    <button class="video-tab" onclick="switchVideo('veo')">Quick Overview</button>
+  </div>
+  <video id="demoVideo" controls preload="metadata" poster="">
+    <source id="videoSrc" src="sora-demo.mp4" type="video/mp4">
+  </video>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -909,6 +969,10 @@ footer a {
       document.getElementById('audioPlayer').load();
     }
 
+    // Show video section when personalized
+    const videoSection = document.getElementById('videoSection');
+    if (videoSection) videoSection.classList.add('visible-section');
+
     // Pre-fill form
     if (contact) {
       const nameInput = document.getElementById('name');
@@ -922,6 +986,21 @@ footer a {
     }
   }
 })();
+
+// Video tab switching
+function switchVideo(type) {
+  const video = document.getElementById('demoVideo');
+  const src = document.getElementById('videoSrc');
+  const tabs = document.querySelectorAll('.video-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  if (type === 'sora') {
+    src.src = 'sora-demo.mp4';
+  } else {
+    src.src = 'veo3-demo.mp4';
+  }
+  video.load();
+}
 
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
