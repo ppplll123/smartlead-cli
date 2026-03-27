@@ -755,6 +755,8 @@ footer a {
   nav { padding: 1rem 1.5rem; }
   .hero { padding: 7rem 1.5rem 4rem; grid-template-columns: 1fr; }
   .hero-right { margin-top: 1rem; }
+  .hero-right div[style*="grid-template-columns: 1fr 1fr"],
+  .hero-right div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
   .stats-bar { grid-template-columns: 1fr; }
   .stat { padding: 2rem 1.5rem; }
   .how-it-works { padding: 5rem 1.5rem; }
@@ -1201,7 +1203,8 @@ footer a {
       const revCount = parseInt(reviews);
       const estLow = Math.round(revCount * 5).toLocaleString();
       const estHigh = Math.round(revCount * 10).toLocaleString();
-      const mapsUrl = params.get('maps_url') || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(firm)}`;
+      const pid = params.get('place_id');
+      const mapsUrl = pid ? `https://www.google.com/maps/place/?q=place_id:${pid}` : (params.get('maps_url') || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(firm)}`);
       subEl.innerHTML = `With <a href="${mapsUrl}" target="_blank" class="review-badge" title="See ${firm} on Google Maps"><span class="review-stars">★ ${parseFloat(params.get('grating') || '4.9')}</span> ${revCount.toLocaleString()} reviews</a>, ${firm} has likely generated <strong>${estLow}–${estHigh} leads</strong> over the years (sound about right?). Most sit dormant in your CRM. We reactivate them using AI + SMS — performance basis, no results no cost.`;
 
       // Update the lead estimate bullet
@@ -1266,7 +1269,7 @@ footer a {
       // Personalize the form section title
       const contactSub = document.querySelector('.contact-sub');
       if (contactSub) {
-        contactSub.textContent = contactSub.textContent.replace('your existing database', `${firm}'s existing database in ${state}`);
+        contactSub.textContent = `We'll reach out within 24 hours with a free reactivation plan for ${firm} in ${state}.`;
       }
     }
 
@@ -1488,13 +1491,10 @@ function handleSubmit(e) {
       btn.disabled = false;
     }, 3000);
   }).catch(() => {
-    // Fallback: direct Telegram + mailto
-    const TG = '8771962060:AAEOqu8fgefwveeLyFBptaZsw1CR87snhhM';
-    fetch(`https://api.telegram.org/bot${TG}/sendMessage`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({chat_id: '1477480207', text: `DBR Lead: ${data.name} / ${data.email} / ${data.firm}`})
-    });
+    // Fallback: mailto (no tokens in client-side code)
+    const subject = encodeURIComponent(`DBR Lead: ${data.firm}`);
+    const body = encodeURIComponent(`Name: ${data.name}\nEmail: ${data.email}\nFirm: ${data.firm}\nState: ${data.state}\nLeads: ${data.leads}\nCase Value: ${data.case_value}\nCRM: ${data.crm}\nPhone: ${data.phone}`);
+    window.location.href = `mailto:peter.lewinski.work@gmail.com?subject=${subject}&body=${body}`;
     btn.textContent = 'Request Received!';
     btn.style.background = '#2a7a4f';
     setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; }, 3000);
