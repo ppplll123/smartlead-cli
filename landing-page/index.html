@@ -45,7 +45,7 @@ body::before {
 
 /* --- PERSONALIZED BANNER --- */
 .personalized-banner {
-  position: fixed;
+  position: relative;
   top: 0;
   width: 100%;
   z-index: 200;
@@ -67,9 +67,7 @@ body::before {
 
 .personalized-icon { font-size: 1rem; }
 
-.personalized-banner + nav { top: 2rem; }
-
-body.personalized .hero { padding-top: 10rem; }
+body.personalized .hero { padding-top: 8rem; }
 
 /* --- AUDIO MESSAGE --- */
 .audio-message {
@@ -142,12 +140,53 @@ nav a.cta-nav:hover {
 /* --- HERO --- */
 .hero {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
   padding: 8rem 3rem 6rem;
   position: relative;
+  gap: 3rem;
 }
+.hero-left { }
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.8s forwards;
+}
+.hero-review-card {
+  background: rgba(255,255,255,0.95);
+  border: none;
+  border-radius: 14px;
+  padding: 1.4rem 1.6rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.hero-review-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+.hero-review-stars { color: #f59e0b; font-size: 0.95rem; margin-bottom: 0.5rem; }
+.hero-review-text { color: #1a1a2e; font-size: 0.85rem; line-height: 1.6; font-style: italic; margin-bottom: 0.5rem; }
+.hero-review-author { color: #666; font-size: 0.7rem; font-weight: 500; }
+.hero-review-google {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.4rem;
+  background: #ffffff;
+  border-radius: 14px;
+  border: none;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hero-review-google:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+.hero-review-score { font-size: 2.2rem; font-weight: 700; color: #1a1a2e; }
+.hero-review-meta { display: flex; flex-direction: column; }
+.hero-review-meta span:first-child { color: #f59e0b; font-size: 1.1rem; }
+.hero-review-meta span:last-child { color: #666; font-size: 0.75rem; }
 
 .hero::after {
   content: '';
@@ -621,6 +660,60 @@ nav a.cta-nav:hover {
   opacity: 0.6;
 }
 
+/* --- REVIEW BADGE --- */
+.review-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(201, 168, 76, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 8px;
+  padding: 0.3rem 0.8rem;
+  color: var(--gold) !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+.review-badge:hover {
+  background: rgba(201, 168, 76, 0.25);
+  border-color: var(--gold);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.2);
+}
+.review-stars {
+  color: #fbbf24;
+  font-size: 1rem;
+}
+
+/* --- TCPA --- */
+.tcpa-hidden { display: none !important; }
+.tcpa-visible { display: flex !important; }
+
+/* --- INLINE FORM --- */
+.form-inline .form-row {
+  display: flex;
+  gap: 0.8rem;
+  align-items: stretch;
+}
+
+.form-inline input {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-inline .btn-primary {
+  margin-top: 0;
+  padding: 0.9rem 1.8rem;
+}
+
+@media (max-width: 768px) {
+  .form-inline .form-row {
+    flex-direction: column;
+  }
+}
+
 /* --- FOOTER --- */
 footer {
   padding: 3rem;
@@ -660,7 +753,8 @@ footer a {
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   nav { padding: 1rem 1.5rem; }
-  .hero { padding: 7rem 1.5rem 4rem; }
+  .hero { padding: 7rem 1.5rem 4rem; grid-template-columns: 1fr; }
+  .hero-right { margin-top: 1rem; }
   .stats-bar { grid-template-columns: 1fr; }
   .stat { padding: 2rem 1.5rem; }
   .how-it-works { padding: 5rem 1.5rem; }
@@ -679,36 +773,180 @@ footer a {
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo">Leads<span>For</span>.Lawyer</a>
-  <a href="#contact" class="cta-nav">Get Free Test</a>
+  <a href="https://leadsfor.lawyer/" class="logo">Leads<span>For</span>.Lawyer</a>
+  <a href="#contact" class="cta-nav">Reactivate Now</a>
 </nav>
 
 <!-- PERSONALIZED BANNER (shown when URL has ?firm= params) -->
 <div class="personalized-banner" id="personalBanner" style="display:none;">
   <div class="personalized-inner">
     <span class="personalized-icon">&#9733;</span>
-    <span>This page was prepared specifically for <strong id="pFirmName"></strong></span>
+    <span>This page was prepared specifically for <strong id="pFirmName"></strong> — <a id="pFirmLink" href="#" target="_blank" style="color:inherit;text-decoration:underline;">using your brand colors</a></span>
   </div>
 </div>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">Database Reactivation for <span id="pBadge">PI Firms</span></div>
-  <h1 id="heroTitle">Your old leads are worth more than <em>you think</em></h1>
-  <p class="hero-sub" id="heroSub">We use AI + SMS to reactivate the thousands of unconverted leads sitting dormant in your CRM — and turn them into signed cases. Performance basis. No results, no cost.</p>
-  <!-- Audio message (shown when personalized) -->
-  <div class="audio-message" id="audioMessage" style="display:none;">
-    <div class="audio-label">&#127911; Personal message for <span id="pAudioName">you</span></div>
-    <audio id="audioPlayer" controls preload="none">
-      <source id="audioSrc" src="" type="audio/mpeg">
-    </audio>
+  <div class="hero-left">
+    <!-- Audio message FIRST — above everything -->
+    <div class="audio-message" id="audioMessage" style="display:none;margin-bottom:1.5rem;">
+      <div class="audio-label">&#127911; Personal message for <span id="pAudioName">you</span></div>
+      <audio id="audioPlayer" controls preload="none" style="width:100%;">
+        <source id="audioSrc" src="" type="audio/mpeg">
+      </audio>
+    </div>
+    <div class="hero-badge">Database Reactivation for <span id="pBadge">PI Firms</span></div>
+    <h1 id="heroTitle">Your old leads are worth more than <em>you think</em></h1>
+    <p class="hero-sub" id="heroSub">We use AI + SMS to reactivate the thousands of unconverted leads sitting dormant in your CRM — and turn them into signed cases. Performance basis. No results, no cost.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn-primary">Reactivate My Old Leads</a>
+      <a href="#how" class="btn-ghost">See how it works &darr;</a>
+    </div>
   </div>
 
-  <div class="hero-cta">
-    <a href="#contact" class="btn-primary">Run a Free Test</a>
-    <a href="#how" class="btn-ghost">See how it works &darr;</a>
+  <!-- HERO RIGHT: FORM (not reviews) -->
+  <div class="hero-right" id="contact" style="opacity:1;animation:none;">
+    <div style="background:rgba(255,255,255,0.95);border-radius:16px;padding:2rem;box-shadow:0 8px 40px rgba(0,0,0,0.2);">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;color:#1a1a2e;margin-bottom:0.3rem;text-align:center;">See what your old CRM leads are&nbsp;worth</h3>
+      <p class="contact-sub" style="font-size:0.75rem;color:#666;text-align:center;margin-bottom:1.2rem;">We'll reach out within 24 hours with a free reactivation plan.</p>
+
+      <form id="heroFormEl" onsubmit="handleSubmit(event)" style="display:flex;flex-direction:column;gap:0.8rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+          <div>
+            <label for="name" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:0.2rem;display:block;">Your Name</label>
+            <input type="text" id="name" name="name" placeholder="John Smith" required style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;color:#1a1a2e;background:#f8f8fa;">
+          </div>
+          <div>
+            <label for="email" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:0.2rem;display:block;">Email</label>
+            <input type="email" id="email" name="email" placeholder="john@firm.com" required style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;color:#1a1a2e;background:#f8f8fa;">
+          </div>
+        </div>
+
+        <div>
+          <label for="firm" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:0.2rem;display:block;">Firm Name</label>
+          <input type="text" id="firm" name="firm" placeholder="Smith & Associates" required style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;color:#1a1a2e;background:#f8f8fa;">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+          <div>
+            <label for="state" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:0.2rem;display:block;">State</label>
+            <input type="text" id="state" name="state" placeholder="California" style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;color:#1a1a2e;background:#f8f8fa;">
+          </div>
+          <div>
+            <label for="leads" id="leadsLabel" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:0.2rem;display:block;">Old Leads in CRM</label>
+            <select id="leads" name="leads" style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;color:#1a1a2e;background:#f8f8fa;">
+              <option value="">Select range...</option>
+              <option value="under-1000">Under 1,000</option>
+              <option value="1000-5000">1,000 - 5,000</option>
+              <option value="5000-10000">5,000 - 10,000</option>
+              <option value="10000-50000">10,000 - 50,000</option>
+              <option value="50000+">50,000+</option>
+              <option value="unsure">Not sure</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="caseValue" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:0.2rem;display:block;">Avg Case Value</label>
+          <select id="caseValue" name="case_value" style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;color:#1a1a2e;background:#f8f8fa;">
+            <option value="">What's a signed case worth?</option>
+            <option value="2000">~$2,000 (minor injury)</option>
+            <option value="5000">~$5,000 (soft tissue)</option>
+            <option value="10000">~$10,000 (moderate MVA)</option>
+            <option value="25000">~$25,000 (serious injury)</option>
+            <option value="50000">~$50,000+ (catastrophic/wrongful death)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="crm" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:0.2rem;display:block;">Your CRM / Case Management</label>
+          <select id="crm" name="crm" style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;color:#1a1a2e;background:#f8f8fa;">
+            <option value="">Select your system...</option>
+            <optgroup label="PI Case Management">
+              <option value="filevine">Filevine</option>
+              <option value="smartadvocate">SmartAdvocate</option>
+              <option value="litify">Litify</option>
+              <option value="casepeer">CASEpeer</option>
+              <option value="needles">Needles / Neos</option>
+              <option value="cloudlex">CloudLex</option>
+              <option value="trialworks">TrialWorks</option>
+            </optgroup>
+            <optgroup label="Legal CRM">
+              <option value="clio">Clio</option>
+              <option value="mycase">MyCase</option>
+              <option value="practicepanther">PracticePanther</option>
+              <option value="lawmatics">Lawmatics</option>
+              <option value="lawruler">Law Ruler</option>
+              <option value="smokeball">Smokeball</option>
+              <option value="caretlegal">CARET Legal</option>
+              <option value="captorra">Captorra</option>
+              <option value="simplyconvert">SimplyConvert</option>
+            </optgroup>
+            <optgroup label="Lead Intake">
+              <option value="leaddocket">Lead Docket</option>
+              <option value="alertcenter">Alert Center</option>
+              <option value="walker">Walker Advertising</option>
+              <option value="leadbyte">LeadByte</option>
+              <option value="elocal">eLocal</option>
+              <option value="bestcase">Best Case Leads</option>
+              <option value="4legalleads">4LegalLeads</option>
+            </optgroup>
+            <optgroup label="General">
+              <option value="hubspot">HubSpot</option>
+              <option value="salesforce">Salesforce</option>
+              <option value="sheets">Google Sheets</option>
+              <option value="csv">CSV / Spreadsheet</option>
+              <option value="other">Other / Custom</option>
+            </optgroup>
+          </select>
+          <div style="font-size:0.55rem;color:#c9a84c;margin-top:0.2rem;font-style:italic;">← We connect directly to your system</div>
+        </div>
+
+        <!-- REVENUE CALCULATOR -->
+        <div id="revenueCalc" style="display:none;background:linear-gradient(135deg, #f0ead6 0%, #faf8f0 100%);border:1px solid #d4b65e;border-radius:10px;padding:1rem;margin:0.2rem 0;">
+          <div style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#8a7030;margin-bottom:0.6rem;text-align:center;">💰 Estimated Revenue From Reactivation</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;text-align:center;">
+            <div>
+              <div style="font-size:0.55rem;color:#888;">Leads Reached</div>
+              <div id="calcReached" style="font-size:1.1rem;font-weight:700;color:#1a1a2e;">—</div>
+              <div style="font-size:0.5rem;color:#aaa;">20-50% respond</div>
+            </div>
+            <div>
+              <div style="font-size:0.55rem;color:#888;">New Cases</div>
+              <div id="calcCases" style="font-size:1.1rem;font-weight:700;color:#1a1a2e;">—</div>
+              <div style="font-size:0.5rem;color:#aaa;">1-5% convert</div>
+            </div>
+            <div>
+              <div style="font-size:0.55rem;color:#888;">Revenue</div>
+              <div id="calcRevenue" style="font-size:1.1rem;font-weight:700;color:#8a7030;">—</div>
+              <div style="font-size:0.5rem;color:#aaa;">conservative est.</div>
+            </div>
+          </div>
+          <div style="font-size:0.55rem;color:#8a7030;margin-top:0.5rem;text-align:center;">↑ Your leads want this too — we build "what's my case worth?" into the SMS flow</div>
+        </div>
+
+        <div>
+          <label for="phone" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:0.2rem;display:block;">Mobile <span style="text-transform:none;letter-spacing:0;opacity:0.6;">(optional — live SMS demo)</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" style="width:100%;padding:0.6rem 0.8rem;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;color:#1a1a2e;background:#f8f8fa;">
+        </div>
+
+        <div id="tcpaBox" style="display:flex;align-items:flex-start;gap:0.5rem;padding:0.7rem;background:#f4f3ee;border:1px solid #e0ddd0;border-radius:8px;">
+          <input type="checkbox" id="tcpa" name="tcpa_consent" style="margin-top:2px;min-width:16px;min-height:16px;accent-color:#c9a84c;">
+          <label for="tcpa" style="font-size:0.6rem;line-height:1.5;color:#666;">
+            By clicking below, you consent to receive calls and texts from LeadsForLawyer using automated technology and AI voice. Consent not required for services. <a href="https://leadsfor.lawyer/privacy" style="color:#8a7030;">Privacy</a> · <a href="https://leadsfor.lawyer/terms" style="color:#8a7030;">Terms</a>
+            <br><span style="color:#8a7030;font-size:0.55rem;">↑ Same TCPA language we deploy on YOUR leads' intake pages</span>
+          </label>
+        </div>
+
+        <button type="submit" style="width:100%;padding:0.9rem;background:#c9a84c;color:#1a1a2e;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.08em;border:none;border-radius:8px;cursor:pointer;transition:all 0.3s;">Reactivate My Old MVA Leads — Free</button>
+        <p style="font-size:0.6rem;color:#999;text-align:center;">No credit card. No commitment.</p>
+      </form>
+    </div>
   </div>
 </section>
+
+<!-- REVIEWS (moved from hero-right to its own section) -->
+<div id="heroReviews"></div>
 
 <!-- STATS -->
 <section class="stats-bar">
@@ -757,8 +995,48 @@ footer a {
         <svg viewBox="0 0 48 48"><path d="M12 36V22l12-10 12 10v14a2 2 0 01-2 2H14a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 38V28h8v10" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <h3>They Become Signed&nbsp;Cases</h3>
-      <p>Warm leads are handed to your team as booked appointments. You do what you do best — sign cases and win for your clients.</p>
+      <p>Warm leads are handed to your team as booked appointments. You do what you do best — sign cases and win for your clients. And many of these reactivated clients leave new 5-star reviews too.</p>
     </div>
+  </div>
+</section>
+
+<!-- CRM INTEGRATIONS -->
+<section style="padding:4rem 3rem;background:var(--navy-light);border-top:1px solid rgba(201,168,76,0.06);border-bottom:1px solid rgba(201,168,76,0.06);">
+  <div style="max-width:900px;margin:0 auto;text-align:center;">
+    <div class="section-label reveal">Works With Your Existing CRM</div>
+    <h2 class="section-title reveal" style="font-size:1.6rem;margin-bottom:0.5rem;">We plug into whatever system you already use</h2>
+    <p class="reveal" style="color:var(--text);margin-bottom:2.5rem;font-size:0.9rem;">Export your old leads in any format. We handle the rest and send qualified appointments back into your CRM.</p>
+    <div class="reveal" style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.6rem;margin-bottom:2rem;">
+      <a href="https://www.filevine.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Filevine</a>
+      <a href="https://www.smartadvocate.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">SmartAdvocate</a>
+      <a href="https://www.litify.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Litify</a>
+      <a href="https://www.casepeer.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">CASEpeer</a>
+      <a href="https://www.assemblysoftware.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Needles/Neos</a>
+      <a href="https://www.clio.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Clio</a>
+      <a href="https://www.leaddocket.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Lead Docket</a>
+      <a href="https://www.cloudlex.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">CloudLex</a>
+      <a href="https://www.mycase.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">MyCase</a>
+      <a href="https://www.practicepanther.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">PracticePanther</a>
+      <a href="https://www.lawmatics.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Lawmatics</a>
+      <a href="https://www.lawruler.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Law Ruler</a>
+      <a href="https://www.captorra.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Captorra</a>
+      <a href="https://www.trialworks.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">TrialWorks</a>
+      <a href="https://simplyconvert.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">SimplyConvert</a>
+      <a href="https://caretlegal.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">CARET Legal</a>
+      <a href="https://www.hubspot.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">HubSpot</a>
+      <a href="https://www.salesforce.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Salesforce</a>
+      <a href="https://www.smokeball.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Smokeball</a>
+      <a href="https://www.alertcenter.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Alert Center</a>
+      <a href="https://www.walkeradvertising.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Walker Advertising</a>
+      <a href="https://www.leadbyte.co.uk/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">LeadByte</a>
+      <a href="https://leads.elocal.com/legal/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">eLocal</a>
+      <a href="https://bestcaseleads.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">Best Case Leads</a>
+      <a href="https://4legalleads.com/" target="_blank" style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;text-decoration:none;transition:all 0.2s;">4LegalLeads</a>
+      <span style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;">Google Sheets</span>
+      <span style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;">CSV Export</span>
+      <span style="background:var(--navy-mid);border:1px solid rgba(201,168,76,0.1);border-radius:6px;padding:0.5rem 1rem;font-size:0.75rem;color:var(--cream);font-weight:500;">Custom API</span>
+    </div>
+    <p class="reveal" style="color:var(--text);font-size:0.75rem;opacity:0.6;">Don't see yours? We integrate with any system that can export a CSV or connect via API.</p>
   </div>
 </section>
 
@@ -774,6 +1052,7 @@ footer a {
         <li>20-50% respond when contacted with AI-driven personalized SMS</li>
         <li>First campaigns typically generate $5,000-$20,000 in new case value</li>
         <li>No new ad spend required — these are leads you already own</li>
+        <li>Everything branded in your firm's colors — this page was built custom for you</li>
       </ul>
     </div>
 
@@ -782,8 +1061,23 @@ footer a {
       <p>We run your first reactivation campaign at zero cost. No commission, no strings, no risk.</p>
       <div class="price">$0 <span>to start</span></div>
       <p>If it works, we figure out terms together. If it doesn't, we walk away. We don't want to be a cost — we want to be a profit centre you didn't know you had.</p>
-      <a href="#contact" class="btn-primary" style="display:block;text-align:center;margin-top:2rem;">Start Free Test</a>
+      <a href="#contact" class="btn-primary" style="display:block;text-align:center;margin-top:2rem;">Start Reactivating My Leads</a>
     </div>
+  </div>
+</section>
+
+<!-- THEIR OWN REVIEWS -->
+<section class="proof" id="clientReviews" style="display:none;">
+  <div class="reveal">
+    <div class="section-label" style="margin-bottom:1.5rem;">What Your Clients Already Say About <span id="pReviewFirm"></span></div>
+    <div id="reviewStars" style="font-size:1.8rem;margin-bottom:0.5rem;"></div>
+    <p style="color:var(--gold);font-size:1.1rem;margin-bottom:2rem;">
+      <a id="reviewLink" href="#" target="_blank" style="color:var(--gold);text-decoration:none;">
+        <span id="pRating"></span>/5 from <span id="pReviewCount"></span> reviews on Google
+      </a>
+    </p>
+    <div id="reviewCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:900px;margin:0 auto;"></div>
+    <p style="margin-top:2rem;color:var(--text);font-size:0.85rem;">Now imagine reactivating the leads behind these reviews — and the thousands who never left one.</p>
   </div>
 </section>
 
@@ -802,58 +1096,21 @@ footer a {
   </div>
 </section>
 
-<!-- CONTACT -->
-<section class="contact" id="contact">
-  <div class="contact-inner">
-    <div class="section-label reveal">Get Started</div>
-    <h2 class="section-title reveal">See what your old leads are&nbsp;worth</h2>
-    <p class="contact-sub reveal">Fill out the form below and we'll reach out within 24 hours to discuss a free test campaign on your existing database.</p>
+<!-- (form moved to after hero) -->
 
-    <form class="form reveal" onsubmit="handleSubmit(event)">
-      <div class="form-row">
-        <div>
-          <label for="name">Your Name</label>
-          <input type="text" id="name" name="name" placeholder="John Smith" required>
-        </div>
-        <div>
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="john@firm.com" required>
-        </div>
-      </div>
-
-      <div>
-        <label for="firm">Firm Name</label>
-        <input type="text" id="firm" name="firm" placeholder="Smith & Associates" required>
-      </div>
-
-      <div class="form-row">
-        <div>
-          <label for="state">State</label>
-          <input type="text" id="state" name="state" placeholder="California">
-        </div>
-        <div>
-          <label for="leads">Estimated Old Leads</label>
-          <select id="leads" name="leads">
-            <option value="">Select range...</option>
-            <option value="under-1000">Under 1,000</option>
-            <option value="1000-5000">1,000 - 5,000</option>
-            <option value="5000-10000">5,000 - 10,000</option>
-            <option value="10000-50000">10,000 - 50,000</option>
-            <option value="50000+">50,000+</option>
-            <option value="unsure">Not sure</option>
-          </select>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-primary">Request Free Test Campaign</button>
-      <p class="form-note">No credit card. No commitment. We'll run your first campaign for free.</p>
-    </form>
+<!-- BUY LEADS CTA -->
+<section style="padding:4rem 3rem;background:var(--navy-light);text-align:center;border-top:1px solid rgba(201,168,76,0.08);">
+  <div style="max-width:600px;margin:0 auto;">
+    <div class="section-label">Already Generating Your Own Leads?</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--cream);margin:1rem 0;letter-spacing:-0.02em;">Want verified MVA leads delivered to your&nbsp;firm?</h2>
+    <p style="color:var(--text);line-height:1.7;margin-bottom:2rem;">We also supply pre-qualified motor vehicle accident leads at $300/lead. Currently working with 30+ firms including Morgan & Morgan.</p>
+    <a href="https://leadsfor.lawyer/#intake" class="btn-primary">Learn About Lead Gen — $300/Lead</a>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <p>&copy; 2026 <a href="#">LeadsFor.Lawyer</a> — Database Reactivation for Personal Injury Firms</p>
+  <p>&copy; 2026 <a href="https://leadsfor.lawyer/">LeadsFor.Lawyer</a> — Database Reactivation for Personal Injury Firms</p>
 </footer>
 
 <script>
@@ -865,6 +1122,43 @@ footer a {
   const reviews = params.get('reviews');
   const contact = params.get('name');
 
+  // Brand color theming via ?primary=&accent=&bg= params
+  const primary = params.get('primary');
+  const accent = params.get('accent');
+  const bg = params.get('bg');
+
+  if (primary || accent || bg) {
+    const root = document.documentElement;
+    if (bg) {
+      // Only tint the hero + banner, keep rest of page in default navy
+      const hero = document.querySelector('.hero');
+      const banner = document.querySelector('.personalized-banner');
+      if (hero) {
+        hero.style.background = `linear-gradient(135deg, ${bg} 0%, ${adjustBrightness(bg, -20)} 100%)`;
+      }
+      if (banner) {
+        banner.style.background = `linear-gradient(90deg, ${adjustBrightness(bg, 40)} 0%, ${adjustBrightness(bg, 60)} 100%)`;
+        banner.style.color = '#ffffff';
+      }
+    }
+    if (accent) {
+      root.style.setProperty('--gold', accent);
+      root.style.setProperty('--gold-light', adjustBrightness(accent, 40));
+    }
+    if (primary) {
+      root.style.setProperty('--cream', primary);
+    }
+  }
+
+  function adjustBrightness(hex, amount) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const r = Math.min(255, Math.max(0, parseInt(hex.substring(0, 2), 16) + amount));
+    const g = Math.min(255, Math.max(0, parseInt(hex.substring(2, 4), 16) + amount));
+    const b = Math.min(255, Math.max(0, parseInt(hex.substring(4, 6), 16) + amount));
+    return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
+  }
+
   if (firm) {
     document.body.classList.add('personalized');
 
@@ -872,6 +1166,14 @@ footer a {
     const banner = document.getElementById('personalBanner');
     banner.style.display = 'block';
     document.getElementById('pFirmName').textContent = firm;
+    document.title = `${firm} — Database Reactivation by LeadsForLawyer`;
+    const firmLink = document.getElementById('pFirmLink');
+    const firmWebsite = params.get('website');
+    if (firmLink && firmWebsite) {
+      firmLink.href = firmWebsite;
+    } else if (firmLink) {
+      firmLink.style.display = 'none';
+    }
 
     // Personalize badge
     document.getElementById('pBadge').textContent = firm;
@@ -884,18 +1186,28 @@ footer a {
       titleEl.innerHTML = `<em>${firm}</em> is sitting on a goldmine`;
     }
 
+    // Show address if available
+    const address = params.get('address');
+    const website = params.get('website');
+    const badgeEl = document.querySelector('.hero-badge');
+    if (address && badgeEl) {
+      badgeEl.innerHTML += `<br><span style="font-size:0.65rem;opacity:0.6;text-transform:none;letter-spacing:0;">${address}</span>`;
+    }
+
     // Personalize subtext
     const subEl = document.getElementById('heroSub');
     const stateText = state ? ` in ${state}` : '';
     if (reviews) {
-      const estLeads = Math.round(parseInt(reviews) * 10);
-      const estFormatted = estLeads.toLocaleString();
-      subEl.textContent = `With ${parseInt(reviews).toLocaleString()} reviews, ${firm} has likely generated ${estFormatted}+ leads over the years. Most sit dormant in your CRM. We reactivate them using AI + SMS — performance basis, no results no cost.`;
+      const revCount = parseInt(reviews);
+      const estLow = Math.round(revCount * 5).toLocaleString();
+      const estHigh = Math.round(revCount * 10).toLocaleString();
+      const mapsUrl = params.get('maps_url') || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(firm)}`;
+      subEl.innerHTML = `With <a href="${mapsUrl}" target="_blank" class="review-badge" title="See ${firm} on Google Maps"><span class="review-stars">★ ${parseFloat(params.get('grating') || '4.9')}</span> ${revCount.toLocaleString()} reviews</a>, ${firm} has likely generated <strong>${estLow}–${estHigh} leads</strong> over the years (sound about right?). Most sit dormant in your CRM. We reactivate them using AI + SMS — performance basis, no results no cost.`;
 
       // Update the lead estimate bullet
       const leadEst = document.getElementById('pLeadEstimate');
       if (leadEst) {
-        leadEst.textContent = `${firm} likely has ${estFormatted}+ unconverted leads in the CRM`;
+        leadEst.textContent = `${firm} likely has ${estLow}–${estHigh} unconverted leads sitting in the CRM`;
       }
     } else {
       subEl.textContent = `We use AI + SMS to reactivate the unconverted leads sitting dormant in ${firm}'s CRM${stateText} — and turn them into signed cases. Performance basis. No results, no cost.`;
@@ -911,19 +1223,230 @@ footer a {
       document.getElementById('audioPlayer').load();
     }
 
-    // Pre-fill form
-    if (contact) {
-      const nameInput = document.getElementById('name');
-      if (nameInput) nameInput.value = contact;
+    // Pre-fill ALL forms (main + inline)
+    const leadEmail = params.get('email') || '';
+
+    // Fill main form
+    if (contact) document.getElementById('name').value = contact;
+    if (firm) document.getElementById('firm').value = firm;
+    if (state) document.getElementById('state').value = state;
+    if (leadEmail) document.getElementById('email').value = leadEmail;
+
+    // Personalize leads label with firm name
+    const leadsLabel = document.getElementById('leadsLabel');
+    if (leadsLabel && firm) {
+      leadsLabel.innerHTML = `Old Leads in <strong style="color:#8a7030;">${firm}</strong>'s CRM`;
     }
-    const firmInput = document.getElementById('firm');
-    if (firmInput) firmInput.value = firm;
+
+    // Add "your leads want this too" arrows to pre-filled fields
+    const annotations = [
+      { fieldId: 'name', text: '← We pre-fill your leads\' names too' },
+      { fieldId: 'state', text: '← Geo-targeted to their state' },
+      { fieldId: 'leads', text: '← We estimate this from your data' },
+      { fieldId: 'caseValue', text: '← Your leads get "what\'s my case worth?"' },
+      { fieldId: 'phone', text: '← SMS demo — same as what your leads get' },
+    ];
+    annotations.forEach(a => {
+      const field = document.getElementById(a.fieldId);
+      if (field && field.parentElement) {
+        const arrow = document.createElement('div');
+        arrow.style.cssText = 'font-size:0.55rem;color:#c9a84c;margin-top:0.2rem;font-style:italic;opacity:0.85;';
+        arrow.textContent = a.text;
+        field.parentElement.appendChild(arrow);
+      }
+    });
+
+    // Use state throughout the page
     if (state) {
-      const stateInput = document.getElementById('state');
-      if (stateInput) stateInput.value = state;
+      // Personalize "How it works" step 2
+      const step2 = document.querySelectorAll('.step p')[1];
+      if (step2 && !step2.textContent.includes(state)) {
+        step2.textContent = step2.textContent.replace('at scale', `at scale across ${state}`);
+      }
+      // Personalize the form section title
+      const contactSub = document.querySelector('.contact-sub');
+      if (contactSub) {
+        contactSub.textContent = contactSub.textContent.replace('your existing database', `${firm}'s existing database in ${state}`);
+      }
     }
+
+    // Fetch and display real Google reviews
+    const placeId = params.get('place_id');
+    const mapsUrl = placeId
+      ? `https://www.google.com/maps/place/?q=place_id:${placeId}`
+      : (params.get('maps_url') || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(firm)}`);
+    const grating = params.get('grating') || '4.9';
+
+    if (reviews && parseInt(reviews) > 50) {
+      fetchGoogleReviews(firm, reviews, mapsUrl, params.get('greviews'), grating);
+    }
+
+    // Populate hero-right with review cards
+    const heroRight = document.getElementById('heroReviews');
+    if (heroRight && reviews) {
+      const reviewsB64 = params.get('greviews');
+      let heroHTML = '';
+
+      // Google score badge at top
+      heroHTML += `<a href="${mapsUrl}" target="_blank" class="hero-review-google">
+        <div class="hero-review-score">${grating}</div>
+        <div class="hero-review-meta">
+          <span>${'★'.repeat(Math.round(parseFloat(grating)))}</span>
+          <span>${parseInt(reviews).toLocaleString()} reviews on Google</span>
+        </div>
+      </a>`;
+
+      if (reviewsB64) {
+        try {
+          const reviewData = JSON.parse(atob(reviewsB64));
+          reviewData.forEach(r => {
+            heroHTML += `<div class="hero-review-card">
+              <div class="hero-review-stars">${'★'.repeat(r.stars || 5)}</div>
+              <div class="hero-review-text">"${r.text}"</div>
+              <div class="hero-review-author">— ${r.author}</div>
+            </div>`;
+          });
+        } catch(e) {}
+      } else {
+        // No review text — show a compelling teaser
+        heroHTML += `<div class="hero-review-card">
+          <div class="hero-review-stars">★★★★★</div>
+          <div class="hero-review-text">${parseInt(reviews).toLocaleString()} clients rated ${firm} ${grating}/5 stars. Imagine reactivating the leads behind those reviews.</div>
+          <div class="hero-review-author"><a href="${mapsUrl}" target="_blank" style="color:var(--gold);">See all reviews →</a></div>
+        </div>`;
+      }
+
+      heroRight.innerHTML = heroHTML;
+    }
+
+    // Auto-select lead estimate based on reviews
+    if (reviews) {
+      const est = parseInt(reviews) * 10;
+      const sel = document.getElementById('leads');
+      if (est < 1000) sel.value = 'under-1000';
+      else if (est < 5000) sel.value = '1000-5000';
+      else if (est < 10000) sel.value = '5000-10000';
+      else if (est < 50000) sel.value = '10000-50000';
+      else sel.value = '50000+';
+    }
+
+    // Fill all inline forms
+    document.querySelectorAll('.pf-name').forEach(el => { if (contact) el.value = contact; });
+    document.querySelectorAll('.pf-email').forEach(el => { if (leadEmail) el.value = leadEmail; });
+    document.querySelectorAll('.pf-firm').forEach(el => { if (firm) el.value = firm; });
+    document.querySelectorAll('.pf-state').forEach(el => { if (state) el.value = state; });
   }
 })();
+
+// Google Reviews display
+function fetchGoogleReviews(firm, reviewCount, mapsUrl, reviewsB64, ratingParam) {
+  const section = document.getElementById('clientReviews');
+  const rating = ratingParam || '4.9';
+  const googleUrl = mapsUrl || '#';
+
+  document.getElementById('pReviewFirm').textContent = firm;
+  document.getElementById('pRating').textContent = rating;
+  document.getElementById('pReviewCount').textContent = parseInt(reviewCount).toLocaleString();
+  document.getElementById('reviewLink').href = googleUrl;
+
+  // Star display
+  const stars = Math.round(parseFloat(rating));
+  document.getElementById('reviewStars').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+
+  const container = document.getElementById('reviewCards');
+
+  if (reviewsB64) {
+    try {
+      const reviewData = JSON.parse(atob(reviewsB64));
+      reviewData.forEach(r => {
+        const card = document.createElement('div');
+        card.style.cssText = 'background:rgba(255,255,255,0.95);border:none;border-radius:14px;padding:1.8rem;text-align:left;box-shadow:0 4px 24px rgba(0,0,0,0.12);';
+        card.innerHTML = `
+          <div style="color:#f59e0b;margin-bottom:0.6rem;font-size:1.1rem;">${'★'.repeat(r.stars || 5)}</div>
+          <p style="color:#1a1a2e;font-size:0.9rem;line-height:1.7;margin-bottom:0.8rem;font-style:italic;">"${r.text}"</p>
+          <p style="color:#666;font-size:0.75rem;font-weight:500;">— ${r.author}</p>
+        `;
+        container.appendChild(card);
+      });
+    } catch(e) { console.log('Review parse error', e); }
+  } else {
+    // No review text — show a teaser card linking to Google
+    const card = document.createElement('div');
+    card.style.cssText = 'background:rgba(255,255,255,0.95);border:none;border-radius:14px;padding:2.5rem;text-align:center;grid-column:1/-1;box-shadow:0 4px 24px rgba(0,0,0,0.12);';
+    card.innerHTML = `
+      <div style="color:#f59e0b;font-size:2.2rem;margin-bottom:0.5rem;">${'★'.repeat(stars)}</div>
+      <p style="color:#1a1a2e;font-size:1.2rem;margin-bottom:0.5rem;"><strong>${parseInt(reviewCount).toLocaleString()} clients</strong> rated ${firm} <strong>${rating}/5</strong></p>
+      <a href="${googleUrl}" target="_blank" style="color:#c9a84c;font-size:0.9rem;font-weight:500;">See all reviews on Google →</a>
+    `;
+    container.appendChild(card);
+  }
+
+  // Always show the section + reactivation CTA
+  const ctaP = document.querySelector('#clientReviews .reveal > p:last-of-type');
+  if (ctaP) {
+    const estLow = Math.round(parseInt(reviewCount) * 5).toLocaleString();
+    const estHigh = Math.round(parseInt(reviewCount) * 10).toLocaleString();
+    ctaP.innerHTML = `Your clients already love you. Now imagine reactivating the ${estLow}–${estHigh} leads who never left a review — and turning them into signed cases and even <em>more</em> 5-star reviews.`;
+  }
+  section.style.display = 'block';
+}
+
+// Revenue Calculator
+function updateRevenueCalc() {
+  const leadsSelect = document.getElementById('leads');
+  const caseSelect = document.getElementById('caseValue');
+  const calcDiv = document.getElementById('revenueCalc');
+
+  if (!leadsSelect || !caseSelect || !calcDiv) return;
+
+  const leadsVal = leadsSelect.value;
+  const caseVal = parseInt(caseSelect.value);
+
+  if (!leadsVal || !caseVal || leadsVal === 'unsure') {
+    calcDiv.style.display = 'none';
+    return;
+  }
+
+  // Parse leads range
+  const leadsMap = {
+    'under-1000': 500,
+    '1000-5000': 3000,
+    '5000-10000': 7500,
+    '10000-50000': 25000,
+    '50000+': 75000
+  };
+  const leadsCount = leadsMap[leadsVal] || 0;
+
+  // Conservative: 20% respond, 1% of responders convert
+  const lowRespond = Math.round(leadsCount * 0.2);
+  const lowCases = Math.max(1, Math.round(lowRespond * 0.01));
+  const lowRev = lowCases * caseVal;
+
+  // Optimistic: 50% respond, 5% convert
+  const highRespond = Math.round(leadsCount * 0.5);
+  const highCases = Math.round(highRespond * 0.05);
+  const highRev = highCases * caseVal;
+
+  document.getElementById('calcReached').textContent = `${lowRespond.toLocaleString()}–${highRespond.toLocaleString()}`;
+  document.getElementById('calcCases').textContent = `${lowCases}–${highCases}`;
+  document.getElementById('calcRevenue').textContent = `$${lowRev.toLocaleString()}–$${highRev.toLocaleString()}`;
+
+  calcDiv.style.display = 'block';
+}
+
+const leadsEl = document.getElementById('leads');
+const caseEl = document.getElementById('caseValue');
+if (leadsEl) leadsEl.addEventListener('change', updateRevenueCalc);
+if (caseEl) caseEl.addEventListener('change', updateRevenueCalc);
+
+// Auto-select $10K case value and trigger calculator
+const caseDefault = document.getElementById('caseValue');
+if (caseDefault && !caseDefault.value) {
+  caseDefault.value = '10000';
+}
+setTimeout(updateRevenueCalc, 500);
+
+// TCPA checkbox always visible — lawyers need to see compliance upfront
 
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
@@ -937,7 +1460,7 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Form
+// Form — sends to Telegram + email notification
 function handleSubmit(e) {
   e.preventDefault();
   const btn = e.target.querySelector('button');
@@ -945,22 +1468,37 @@ function handleSubmit(e) {
   btn.textContent = 'Sending...';
   btn.disabled = true;
 
-  // Collect data
   const data = Object.fromEntries(new FormData(e.target));
+  const params = new URLSearchParams(window.location.search);
+  data.firm = data.firm || params.get('firm') || '';
+  data.state = data.state || params.get('state') || '';
+  data.source_url = window.location.href;
 
-  // In production, POST to your endpoint
-  console.log('Form submission:', data);
-
-  setTimeout(() => {
+  // Send to backend (Cloudflare Worker → Telegram + Email + Auto-reply)
+  fetch('/api/submit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  }).then(r => r.json()).then(res => {
     btn.textContent = 'Request Received!';
     btn.style.background = '#2a7a4f';
     setTimeout(() => {
       btn.textContent = orig;
       btn.style.background = '';
       btn.disabled = false;
-      e.target.reset();
     }, 3000);
-  }, 1000);
+  }).catch(() => {
+    // Fallback: direct Telegram + mailto
+    const TG = '8771962060:AAEOqu8fgefwveeLyFBptaZsw1CR87snhhM';
+    fetch(`https://api.telegram.org/bot${TG}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({chat_id: '1477480207', text: `DBR Lead: ${data.name} / ${data.email} / ${data.firm}`})
+    });
+    btn.textContent = 'Request Received!';
+    btn.style.background = '#2a7a4f';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; }, 3000);
+  });
 }
 </script>
 </body>
